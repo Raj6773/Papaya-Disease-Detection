@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Load YOLO model
-MODEL_PATH = r"C:\Users\rajki\Downloads\mini\best.pt"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "best.pt")  # ✅ Correct path inside backend folder
 model = YOLO(MODEL_PATH)
 
 UPLOAD_FOLDER = "uploads"
