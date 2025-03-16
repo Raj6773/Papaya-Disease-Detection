@@ -1,9 +1,0 @@
-flask
-flask-cors
-ultralytics
-gunicorn
-opencv-python-headless
-filetype
-requests
-torch
-torchvision
