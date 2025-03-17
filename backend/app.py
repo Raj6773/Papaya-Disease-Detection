@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ✅ Ensure paths work inside Docker
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get backend directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
 
@@ -23,6 +23,11 @@ model = None  # Do not load at startup
 @app.route("/")
 def home():
     return "Flask API is running. Use /predict to send images."
+
+# ✅ NEW: Health check route (for Hugging Face)
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "OK"}), 200
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -87,4 +92,5 @@ def download(filename):
         return jsonify({"error": "File not found"}), 404
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    PORT = int(os.environ.get("PORT", 7860))  # ✅ Use Hugging Face's expected port
+    app.run(host="0.0.0.0", port=PORT)
