@@ -8,25 +8,20 @@ import glob
 app = Flask(__name__)
 CORS(app)
 
-# ✅ Ensure paths work inside Docker
+# Optimize Paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 RESULTS_FOLDER = os.path.join(BASE_DIR, "results")
-
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
-# ✅ Lazy-load YOLO model only when needed
+# Lazy-load YOLO Model
 MODEL_PATH = os.path.join(BASE_DIR, "best.pt")
-model = None  # Do not load at startup
+model = None
 
 @app.route("/")
 def home():
     return "Flask API is running. Use /predict to send images."
-
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "OK"}), 200
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -34,7 +29,7 @@ def predict():
     try:
         if model is None:
             print("🔄 Loading YOLO Model...")
-            model = YOLO(MODEL_PATH)  # Load model at first request
+            model = YOLO(MODEL_PATH, verbose=False)  # Load model only on first request
             print("✅ YOLO Model Loaded Successfully!")
 
         if "image" not in request.files:
@@ -45,20 +40,21 @@ def predict():
         img_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(img_path)
 
-        # Run YOLO detection
-        results = model(img_path, save=True, project=RESULTS_FOLDER, name="predict")
+        # Run YOLO Detection (Optimized)
+        results = model(img_path, conf=0.5, save=True, project=RESULTS_FOLDER, name="predict")
 
-        # ✅ Find latest prediction folder dynamically
+        # Find latest prediction folder
         prediction_folders = glob.glob(os.path.join(RESULTS_FOLDER, "predict*"))
         latest_folder = max(prediction_folders, key=os.path.getctime)
         output_img_path = os.path.join(latest_folder, filename)
 
-        # ✅ Extract detected disease name
+        # Extract detected disease name
         detected_disease = "Unknown Disease"
         for result in results:
             for box in result.boxes:
                 detected_disease = result.names[int(box.cls[0])]
 
+        # Disease details placeholder
         disease_details = {
             "cause": "Not a disease.",
             "treatment": "No treatment needed.",
@@ -91,5 +87,5 @@ def download(filename):
         return jsonify({"error": "File not found"}), 404
 
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 5000))  # ✅ Change for Railway (no fixed port)
+    PORT = int(os.environ.get("PORT", 5000))  # Render expects PORT from env
     app.run(host="0.0.0.0", port=PORT)
