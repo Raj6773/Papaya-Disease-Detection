@@ -1,28 +1,26 @@
-# Use official Python image
-FROM python:3.9-slim
+# Use a lightweight Python image
+FROM python:3.9-slim  
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*  
 
-# Set environment variables
-ENV MPLCONFIGDIR=/tmp
-ENV YOLO_CONFIG_DIR=/tmp
+# Set environment variables  
+ENV MPLCONFIGDIR=/tmp  
+ENV YOLO_CONFIG_DIR=/tmp  
 
 # Set working directory
-WORKDIR /app
+WORKDIR /app  
 
-# Copy files
-COPY backend/app.py .
-COPY backend/best.pt .
-COPY backend/requirements.txt .
+# Copy files  
+COPY backend/requirements.txt .  
+COPY backend/app.py .  
+COPY backend/best.pt .  
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies  
+RUN pip install --no-cache-dir -r requirements.txt  
 
-# Expose port
-EXPOSE 5000
+# Expose the Flask API port
+EXPOSE 5000  
 
-# Run Flask app with Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+# Run Flask API  
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--workers", "2", "--timeout", "600", "app:app"]

@@ -8,9 +8,16 @@ import glob
 app = Flask(__name__)
 CORS(app)
 
-# Load YOLO model
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "best.pt")  # ✅ Correct path inside backend folder
-model = YOLO(MODEL_PATH)
+# Lazy loading: Load model only when needed
+model = None  # Don't load model at startup
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    global model
+    if model is None:
+        print("🔄 Loading YOLO Model...")  # Debug log
+        model = YOLO(MODEL_PATH)  # ✅ Load model only on first request
+        print("✅ YOLO Model Loaded Successfully!")
 
 UPLOAD_FOLDER = "uploads"
 RESULTS_FOLDER = "results"
