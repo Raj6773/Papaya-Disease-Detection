@@ -22,7 +22,8 @@ class _MyAppState extends State<MyApp> {
   String? _prevention;
   bool _isLoading = false;
 
-  final String apiUrl = "http://192.168.0.122:5000/predict"; // Flask API URL
+  final String apiUrl = "https://papaya-disease-detection.onrender.com/predict"; // Updated backend URL
+
 
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
