@@ -26,4 +26,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000  
 
 # ✅ Use Gunicorn for production
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "--workers=1", "--timeout=600", "app:app"]
+gunicorn -b 0.0.0.0:5000 --workers=2 --timeout 120 app:app
