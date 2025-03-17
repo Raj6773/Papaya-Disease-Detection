@@ -24,7 +24,6 @@ model = None  # Do not load at startup
 def home():
     return "Flask API is running. Use /predict to send images."
 
-# ✅ NEW: Health check route (for Hugging Face)
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "OK"}), 200
@@ -92,5 +91,5 @@ def download(filename):
         return jsonify({"error": "File not found"}), 404
 
 if __name__ == "__main__":
-    PORT = int(os.environ.get("PORT", 7860))  # ✅ Use Hugging Face's expected port
+    PORT = int(os.environ.get("PORT", 5000))  # ✅ Change for Railway (no fixed port)
     app.run(host="0.0.0.0", port=PORT)

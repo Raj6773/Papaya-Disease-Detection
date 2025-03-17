@@ -10,10 +10,9 @@ RUN apt-get update && apt-get install -y \
 # ✅ Set environment variables  
 ENV MPLCONFIGDIR=/tmp  
 ENV YOLO_CONFIG_DIR=/tmp  
-ENV PORT=7860  # ✅ Set correct Hugging Face port  
 
-# ✅ Set working directory INSIDE backend
-WORKDIR /app/backend  
+# ✅ Set working directory (Root, not inside `/backend`)
+WORKDIR /app  
 
 # ✅ Copy necessary files  
 COPY backend/requirements.txt .  
@@ -23,8 +22,8 @@ COPY backend/best.pt .
 # ✅ Install dependencies  
 RUN pip install --no-cache-dir -r requirements.txt  
 
-# ✅ Expose the correct port for Hugging Face  
-EXPOSE 7860  
+# ✅ Expose port for Railway  
+EXPOSE 5000  
 
-# ✅ Use Gunicorn for production, increase timeout  
-CMD ["gunicorn", "-b", "0.0.0.0:7860", "--timeout", "600", "app:app"]
+# ✅ Run Flask app directly
+CMD ["python", "app.py"]
